@@ -188,7 +188,6 @@ int rtosScheduler() {                       // question: How rtos scheduler sche
     WTIMER5_TAV_R = 0;
     WTIMER5_CTL_R |=TIMER_CTL_TAEN;
 
-
     return task;
     }
 
@@ -221,7 +220,6 @@ void rtosStart() {
     WTIMER5_CTL_R |= TIMER_CTL_TAEN;        // starting the timer
    // WTIMER5_TAV_R = 0;                      // clearing the timer
     (*fn)(); // CHECK HERE DOES IT HAVE TO BE POINTER
-
 
 
     // Add code to initialize the SP with tcb[task_current].sp; // what does it mean ?
@@ -354,10 +352,12 @@ void systickIsr() {
         tcb[i].filterTime = (99 * tcb[i].filterTime + tcb[i].time) / 100 ; // ticks is propotional to time
         }
     timeCounter = 0; //resetting the timeCounter
-    cpuTime();
+
+    cpuTime();       // Calculating the percentage of CPU utilization
+
     }
 
-    //cpuTime(); // cpu time updates itself after new filter time
+    //cpuTime();    // cpu time updates itself after new filter time
 
     if (preemption == true){
         NVIC_INT_CTRL_R |= NVIC_INT_CTRL_PEND_SV;
@@ -445,7 +445,7 @@ void svCallIsr() {
             break;
 
         case WAIT: // 102 WAIT  step 7. (wait *psemaphore) // doesn't return until things  waiting is actually there
-                pointerRR0 = RR0;
+                pointerRR0 = RR0;                               
             if ((pointerRR0->count) > 0) {
                 pointerRR0->count = (pointerRR0->count) - 1; // *(pointerRR0)-- 5 to 0
                // if ( priorityInheritance = true){           // storing the semaphore user
@@ -1073,7 +1073,7 @@ void shell() {
                     putsUart0("\n\r");
                     putsUart0("pidof taskname: provides pid number from taskname");
                     putsUart0("\n\r");
-                    putsUart0("ps: lists process, pid, priority, cpu %");
+                    putsUart0("ps: lists process, pid, priority, cpu %"); //This line may cause issue, run to check code, check escape character
                     putsUart0("\n\r");
                     putsUart0("ipcs: lists semaphores, resources available, waiting semaphore");
                     putsUart0("\n\r");
